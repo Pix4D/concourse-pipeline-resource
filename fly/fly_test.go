@@ -171,21 +171,6 @@ var _ = Describe("Command", func() {
 		})
 	})
 
-	Describe("Pipelines", func() {
-		BeforeEach(func() {
-			fakeFlyContents = `#!/bin/sh
-echo '[{"name":"abc"},{"name":"def"}]'
-`
-		})
-
-		It("returns pipelines without error", func() {
-			pipelines, err := flyCommand.Pipelines()
-			Expect(err).NotTo(HaveOccurred())
-
-			Expect(pipelines).To(Equal([]string{"abc", "def"}))
-		})
-	})
-
 	Describe("GetPipeline", func() {
 		var (
 			pipelineName string
