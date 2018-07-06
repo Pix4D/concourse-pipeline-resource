@@ -2,9 +2,9 @@ package fly
 
 import (
 	"bytes"
-	"encoding/json"
 	"fmt"
 	"os/exec"
+	"strings"
 
 	"crypto/tls"
 	"net/http"
@@ -77,23 +77,17 @@ func (f command) Login(
 }
 
 func (f command) Pipelines() ([]string, error) {
-	psOut, err := f.run("pipelines", "--json")
+	psOut, err := f.run("pipelines")
 	if err != nil {
 		return nil, err
 	}
 
-	var ps []struct {
-		Name string `json:"name"`
-	}
-
-	err = json.Unmarshal(psOut, &ps)
-	if err != nil {
-		return nil, err
-	}
-
-	names := make([]string, len(ps))
-	for i, p := range ps {
-		names[i] = p.Name
+	stdout := string(psOut[:])
+	lines := strings.Split(stdout, "\n")
+	names := make([]string, len(lines))
+	for i, line := range lines {
+		cells := strings.SplitN(line, "  ", 2)
+		names[i] = cells[0]
 	}
 
 	return names, nil
